@@ -14,9 +14,9 @@ const io = socketio(server);
 io.on('connection', (socket) => {
     console.log('We have a new connection');
 
-    socket.on('join', ({room}, callback) => {
+    socket.on('join', ({room, random}, callback) => {
 
-        const {error, user} = addUser({id: socket.id, room: room});
+        const {error, user} = addUser({id: socket.id, room: room, random});
         // console.log(user, error);
 
         if (error) {
@@ -32,7 +32,7 @@ io.on('connection', (socket) => {
         socket.join(user.room);
 
 
-        callback();
+        callback({});
 
     });
 
@@ -46,6 +46,7 @@ io.on('connection', (socket) => {
         callback();
 
     });
+
 
     socket.on('startGame', (initialBoardState, callback) => {
 
@@ -61,6 +62,7 @@ io.on('connection', (socket) => {
     socket.on('move', (moveData, callback) => {
      console.log('move');
         const user = getUser(socket.id);
+        console.log(user);
         if (user) {
             // movePiece(moveData.position, moveData.destination, moveData.whoMoves, user.room);
             io.to(user.room).emit('move', moveData);
@@ -76,7 +78,8 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         let user = removeUser(socket.id);
-        if (user) io.to(user.room).emit({user: 'admin', text: `User ${user.name} has left the game!`});
+        console.log('user left')
+        if (user) io.to(user.room).emit('message', {user: 'admin', text: `User ${user.name} has left the game!`});
     })
 });
 app.use(router);
