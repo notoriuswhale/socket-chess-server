@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    res.send('server is running');
+router.use("/", (req, res) => {
+    res.sendFile(__dirname + "/public/index.html");
+    // res.send("/public/index.html");
 });
-
 
 module.exports = router;
